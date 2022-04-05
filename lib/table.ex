@@ -1,0 +1,2 @@
+defmodule Table do
+end
