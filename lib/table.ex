@@ -13,9 +13,9 @@ defmodule Table do
   ## Protocol
 
   The unified access is enabled for structs implementing the
-  `Table.Reader` protocol. Note that if the struct may be represented
-  as tabular data only in some cases, the protocol implementation may
-  be relaxed. Consequently, functions in this module will raise when
+  `Table.Reader` protocol. Note that the struct may be representable
+  as tabular data only in some cases, so the protocol implementation
+  may be lax. Consequently, functions in this module will raise when
   given non-tabular data.
 
   By default the protocol is implemented for lists and maps of certain
