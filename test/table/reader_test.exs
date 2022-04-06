@@ -11,6 +11,8 @@ defmodule Table.ReaderTest do
 
       assert Table.Reader.init([{"a", [1, 2], [1, 2]}]) == :none
       assert Table.Reader.init([{"a", [1, 2]}, {"b", 2}]) == :none
+
+      assert Table.Reader.init([%URI{}]) == :none
     end
 
     test "list of key-vals" do

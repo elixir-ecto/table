@@ -44,6 +44,10 @@ defmodule Table.Reader.Enumerable do
 
   defp enumerable?(term), do: Enumerable.impl_for(term) != nil
 
+  defp columns_for(record) when is_struct(record) do
+    :error
+  end
+
   defp columns_for(record) when is_map(record) do
     {:ok, record |> Map.keys() |> Enum.sort()}
   end
