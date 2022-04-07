@@ -73,7 +73,7 @@ defmodule Table do
       [%{id: 1, name: "Sherlock"}, %{id: 2, name: "John"}, %{id: 3, name: "Mycroft"}]
 
   """
-  @spec to_rows(Reader.t(), keyword()) :: Enumerable.t(%{column() => term()})
+  @spec to_rows(Reader.t(), keyword()) :: Enumerable.t()
   def to_rows(tabular, opts \\ []) do
     tabular |> to_rows_with_info(opts) |> elem(0)
   end
@@ -89,8 +89,7 @@ defmodule Table do
       %{columns: [:id, :name]}
 
   """
-  @spec to_rows_with_info(Reader.t(), keyword()) ::
-          {Enumerable.t(%{column() => term()}), table_info()}
+  @spec to_rows_with_info(Reader.t(), keyword()) :: {Enumerable.t(), table_info()}
   def to_rows_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 

@@ -10,7 +10,7 @@ defprotocol Table.Reader do
   values. The values should follow the order of columns in the
   metadata.
   """
-  @type row_reader :: {:rows, metadata(), Enumerable.t(row_values :: Enumerable.t())}
+  @type row_reader :: {:rows, metadata(), Enumerable.t()}
 
   @typedoc """
   Describes column-based traversal.
@@ -19,7 +19,7 @@ defprotocol Table.Reader do
   of values. The columns should have the same order as columns in the
   metadata.
   """
-  @type column_reader :: {:columns, metadata(), Enumerable.t(column_values :: Enumerable.t())}
+  @type column_reader :: {:columns, metadata(), Enumerable.t()}
 
   @typedoc """
   Table metadata.
