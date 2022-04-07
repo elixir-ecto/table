@@ -28,7 +28,7 @@ defprotocol Table.Reader do
           columns: list(Table.column())
         }
 
-  @typedoc """
+  @doc """
   Returns information on how to traverse the given tabular data.
 
   There are generally two distinct ways of traversing tabular data,
