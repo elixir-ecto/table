@@ -44,7 +44,7 @@ defmodule Table.Reader.Enumerable do
 
   defp enumerable?(term), do: Enumerable.impl_for(term) != nil
 
-  defp columns_for(record) when is_struct(record) do
+  defp columns_for(%_{} = _struct) do
     :error
   end
 

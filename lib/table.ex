@@ -55,7 +55,7 @@ defmodule Table do
 
   @doc """
   Accesses tabular data as a sequence of rows.
-  
+
   Returns an enumerable that emits each row as a map.
 
   ## Options
@@ -125,7 +125,7 @@ defmodule Table do
 
   @doc """
   Accesses tabular data as individual columns.
-  
+
   Returns a map with enumerables as values.
 
   ## Options
