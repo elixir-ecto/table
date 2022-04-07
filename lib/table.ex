@@ -13,7 +13,7 @@ defmodule Table do
   ## Protocol
 
   The unified access is enabled for structs implementing the
-  `Table.Reader` protocol. Note that the struct may be representable
+  `Table.Reader` protocol. Note that a struct may be representable
   as tabular data only in some cases, so the protocol implementation
   may be lax. Consequently, functions in this module will raise when
   given non-tabular data.
@@ -55,6 +55,8 @@ defmodule Table do
 
   @doc """
   Accesses tabular data as a sequence of rows.
+  
+  Returns an enumerable that emits each row as a map.
 
   ## Options
 
@@ -123,6 +125,8 @@ defmodule Table do
 
   @doc """
   Accesses tabular data as individual columns.
+  
+  Returns a map with enumerables as values.
 
   ## Options
 
