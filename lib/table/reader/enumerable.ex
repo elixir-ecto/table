@@ -69,11 +69,11 @@ defmodule Table.Reader.Enumerable do
 
   defp record_values(record, columns) when is_map(record) do
     Enum.map(columns, fn column ->
-      case Map.fetch(record, column) do
-        {:ok, value} ->
+      case record do
+        %{^column => value} ->
           value
 
-        :error ->
+        _ ->
           raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
       end
     end)
