@@ -36,8 +36,8 @@ defprotocol Table.Reader do
   underlying data representation, one of them is more natural and
   more efficient.
 
-  This return value describes either of the two traversal types, see
-  `t:row_reader/0` and `t:column_reader/0` respectively.
+  The `init/1` return value describes either of the two traversal
+  types, see `t:row_reader/0` and `t:column_reader/0` respectively.
 
   Some structs may be tabular only in a subset of cases, therefore
   `:none` may be returned to indicate that there is no valid data to
