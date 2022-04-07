@@ -10,7 +10,7 @@ defprotocol Table.Reader do
   values. The values should follow the order of columns in the
   metadata.
   """
-  @type row_reader :: {:rows, metadata(), Enumerable.t(row_values :: Enumerable.t())}
+  @type row_reader :: {:rows, metadata(), Enumerable.t()}
 
   @typedoc """
   Describes column-based traversal.
@@ -19,7 +19,7 @@ defprotocol Table.Reader do
   of values. The columns should have the same order as columns in the
   metadata.
   """
-  @type column_reader :: {:columns, metadata(), Enumerable.t(column_values :: Enumerable.t())}
+  @type column_reader :: {:columns, metadata(), Enumerable.t()}
 
   @typedoc """
   Table metadata.
@@ -28,7 +28,7 @@ defprotocol Table.Reader do
           columns: list(Table.column())
         }
 
-  @typedoc """
+  @doc """
   Returns information on how to traverse the given tabular data.
 
   There are generally two distinct ways of traversing tabular data,
@@ -36,8 +36,8 @@ defprotocol Table.Reader do
   underlying data representation, one of them is more natural and
   more efficient.
 
-  This return value describes either of the two traversal types, see
-  `t:row_reader/0` and `t:column_reader/0` respectively.
+  The `init/1` return value describes either of the two traversal
+  types, see `t:row_reader/0` and `t:column_reader/0` respectively.
 
   Some structs may be tabular only in a subset of cases, therefore
   `:none` may be returned to indicate that there is no valid data to
