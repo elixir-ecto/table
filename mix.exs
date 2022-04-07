@@ -1,7 +1,7 @@
 defmodule Table.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.0-dev"
   @description "Unified access to tabular data"
 
   def project do
