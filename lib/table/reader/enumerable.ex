@@ -32,13 +32,20 @@ defmodule Table.Reader.Enumerable do
   """
   @spec init_rows(Enumerable.t()) :: Table.Reader.row_reader() | :none
   def init_rows(enum) do
-    with {:ok, head} <- Enum.fetch(enum, 0),
-         {:ok, columns} <- columns_for(head) do
-      meta = %{columns: columns}
-      enum = Stream.map(enum, &record_values(&1, columns))
-      {:rows, meta, enum}
-    else
-      _ -> :none
+    case Enum.fetch(enum, 0) do
+      {:ok, head} ->
+        case columns_for(head) do
+          {:ok, columns} ->
+            meta = %{columns: columns}
+            enum = Stream.map(enum, &record_values(&1, columns))
+            {:rows, meta, enum}
+
+          :error ->
+            :none
+        end
+
+      :error ->
+        {:rows, %{columns: []}, []}
     end
   end
 

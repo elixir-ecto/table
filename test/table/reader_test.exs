@@ -3,7 +3,6 @@ defmodule Table.ReaderTest do
 
   describe "list init/1" do
     test "returns :none for non-tabular lists" do
-      assert Table.Reader.init([]) == :none
       assert Table.Reader.init([1, 2, 3]) == :none
 
       assert Table.Reader.init([[]]) == :none
@@ -13,6 +12,13 @@ defmodule Table.ReaderTest do
       assert Table.Reader.init([{"a", [1, 2]}, {"b", 2}]) == :none
 
       assert Table.Reader.init([%URI{}]) == :none
+    end
+
+    test "empty list" do
+      data = []
+
+      assert {:rows, %{columns: []}, enum} = Table.Reader.init(data)
+      assert Enum.to_list(enum) == []
     end
 
     test "list of key-vals" do
