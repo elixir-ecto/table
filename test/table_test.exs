@@ -15,8 +15,8 @@ defmodule TableTest do
 
   describe "to_rows/1" do
     test "raises given invalid tabular data" do
-      assert_raise ArgumentError, "expected valid tabular data, but got: []", fn ->
-        Table.to_rows([])
+      assert_raise ArgumentError, "expected valid tabular data, but got: [1]", fn ->
+        Table.to_rows([1])
       end
     end
 
@@ -51,8 +51,8 @@ defmodule TableTest do
 
   describe "to_columns/1" do
     test "raises given invalid tabular data" do
-      assert_raise ArgumentError, "expected valid tabular data, but got: []", fn ->
-        Table.to_columns([])
+      assert_raise ArgumentError, "expected valid tabular data, but got: [1]", fn ->
+        Table.to_columns([1])
       end
     end
 
