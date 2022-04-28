@@ -7,7 +7,7 @@ Unified access to tabular data.
 
 ## Installation
 
-You can add the `:vega_lite` dependency to your `mix.exs`:
+You can add the `:table` dependency to your `mix.exs`:
 
 ```elixir
 def deps do
