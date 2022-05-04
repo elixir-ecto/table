@@ -166,26 +166,40 @@ defmodule Table do
     {read_columns(reader, only), get_info(reader)}
   end
 
-  defp read_columns({:rows, meta, enum}, only) do
-    for {column, idx} <- Enum.with_index(meta.columns),
-        include_column?(only, column),
-        into: %{} do
-      # Note 1: enumerating each column enumerates the underlying rows,
-      # this is intentional, otherwise we would need to materialize the
-      # whole column in memory, even if rows are loaded on demand
-      # Note 2: row values are given as list, so accessing by index is
-      # linear, but rows are generally short
-      values = Stream.map(enum, &Enum.fetch!(&1, idx))
-      {column, values}
-    end
-  end
-
   defp read_columns({:columns, meta, enum}, only) do
     for {column, values} <- Enum.zip(meta.columns, enum),
         include_column?(only, column),
         into: %{},
         do: {column, values}
   end
+
+  defp read_columns({:rows, meta, enum}, only) do
+    columns =
+      for {column, idx} <- Enum.with_index(meta.columns),
+          include_column?(only, column),
+          do: {column, idx, []}
+
+    # Note: we intentionally materialize the columns into memory,
+    # because having a separate stream for each column would be
+    # notably less efficient on the consumer side
+    columns = Enum.reduce(enum, columns, &row_into_columns/2)
+
+    for {column, _, acc} <- columns,
+        into: %{},
+        do: {column, Enum.reverse(acc)}
+  end
+
+  defp row_into_columns(row, columns), do: row_into_columns(row, 0, columns)
+
+  defp row_into_columns([value | values], idx, [{column, idx, acc} | columns]) do
+    [{column, idx, [value | acc]} | row_into_columns(values, idx + 1, columns)]
+  end
+
+  defp row_into_columns([_value | values], idx, columns) do
+    row_into_columns(values, idx + 1, columns)
+  end
+
+  defp row_into_columns([], _idx, []), do: []
 
   defp include_column?(nil, _column), do: true
   defp include_column?(only, column), do: MapSet.member?(only, column)
