@@ -12,7 +12,7 @@ You can add the `:table` dependency to your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:table, "~> 0.1.0"}
+    {:table, "~> 0.1.1"}
   ]
 end
 ```
