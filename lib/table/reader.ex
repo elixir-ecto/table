@@ -23,9 +23,14 @@ defprotocol Table.Reader do
 
   @typedoc """
   Table metadata.
+
+  User-specific metadata can be added in the form of namespaced
+  tuples. Where the first element is a namespace key and the second
+  
   """
   @type metadata :: %{
-          columns: list(Table.column())
+          required(:columns) => list(Table.column()),
+          optional({term(), term()}) => any()
         }
 
   @doc """
@@ -42,6 +47,11 @@ defprotocol Table.Reader do
   Some structs may be tabular only in a subset of cases, therefore
   `:none` may be returned to indicate that there is no valid data to
   read.
+
+  The `init/1` function should not initiate any form of traversal
+  or open existing resources. If any setup is necessary, it should
+  be peformed when the underlying row or column enumerables are
+  traversed.
   """
   @spec init(t()) :: row_reader() | column_reader() | :none
   def init(tabular)
