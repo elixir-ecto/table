@@ -25,8 +25,8 @@ defprotocol Table.Reader do
   Table metadata.
 
   User-specific metadata can be added in the form of namespaced
-  tuples. Where the first element is a namespace key and the second
-  
+  tuples as keys. The first element is the namespace key, typically an
+  atom, and the second is any term. The value can also be anything.
   """
   @type metadata :: %{
           required(:columns) => list(Table.column()),
