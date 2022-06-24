@@ -30,6 +30,7 @@ defprotocol Table.Reader do
   """
   @type metadata :: %{
           required(:columns) => list(Table.column()),
+          optional(:count) => non_neg_integer(),
           optional({term(), term()}) => any()
         }
 
