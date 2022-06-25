@@ -104,7 +104,7 @@ defmodule Table do
   end
 
   defp read_rows({:rows, meta, enum}, only) do
-    Stream.map(enum, fn values ->
+    Table.Mapper.map(enum, fn values ->
       build_row(meta.columns, values, only)
     end)
   end
