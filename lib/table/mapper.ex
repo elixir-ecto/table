@@ -22,14 +22,10 @@ defmodule Table.Mapper do
       Enumerable.count(proxy.enumerable)
     end
 
-    def member?(proxy, element) do
-      # The mapping is not necessarily reversible, so we fall
-      # back to a linear search. For enumerables representing
-      # data entries member? would generally be linear anyway
-      Enum.any?(proxy.enumerable, fn original ->
-        proxy.mapper.(original) == element
-      end)
-    end
+    # The mapping is not necessarily reversible, so we fall
+    # back to a linear search. For enumerables representing
+    # data entries member? would generally be linear anyway
+    def member?(_proxy, _element), do: {:error, __MODULE__}
 
     def reduce(proxy, acc, fun) do
       Enumerable.reduce(proxy.enumerable, acc, fn original, acc ->
