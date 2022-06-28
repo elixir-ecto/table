@@ -51,6 +51,8 @@ defmodule Table do
 
   @type column :: term()
 
+  @type tabular :: Reader.t() | Reader.row_reader() | Reader.column_reader()
+
   @doc """
   Accesses tabular data as a sequence of rows.
 
@@ -71,7 +73,7 @@ defmodule Table do
       [%{id: 1, name: "Sherlock"}, %{id: 2, name: "John"}, %{id: 3, name: "Mycroft"}]
 
   """
-  @spec to_rows(Reader.t(), keyword()) :: Enumerable.t()
+  @spec to_rows(tabular(), keyword()) :: Enumerable.t()
   def to_rows(tabular, opts \\ []) do
     tabular |> to_rows_with_info(opts) |> elem(0)
   end
@@ -87,13 +89,16 @@ defmodule Table do
       %{columns: [:id, :name]}
 
   """
-  @spec to_rows_with_info(Reader.t(), keyword()) :: {Enumerable.t(), Table.Reader.metadata()}
+  @spec to_rows_with_info(tabular(), keyword()) :: {Enumerable.t(), Table.Reader.metadata()}
   def to_rows_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 
     reader = init_reader!(tabular)
     {read_rows(reader, only), get_info(reader)}
   end
+
+  defp init_reader!({:rows, %{}, _} = reader), do: reader
+  defp init_reader!({:columns, %{}, _} = reader), do: reader
 
   defp init_reader!(tabular) do
     with :none <- Reader.init(tabular) do
@@ -139,7 +144,7 @@ defmodule Table do
       ["Sherlock", "John", "Mycroft"]
 
   """
-  @spec to_columns(Reader.t(), keyword()) :: %{column() => Enumerable.t()}
+  @spec to_columns(tabular(), keyword()) :: %{column() => Enumerable.t()}
   def to_columns(tabular, opts \\ []) do
     tabular |> to_columns_with_info(opts) |> elem(0)
   end
@@ -155,7 +160,7 @@ defmodule Table do
       %{columns: [:id, :name]}
 
   """
-  @spec to_columns_with_info(Reader.t(), keyword()) ::
+  @spec to_columns_with_info(tabular(), keyword()) ::
           {%{column() => Enumerable.t()}, Table.Reader.metadata()}
   def to_columns_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
