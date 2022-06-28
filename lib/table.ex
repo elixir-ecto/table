@@ -51,8 +51,6 @@ defmodule Table do
 
   @type column :: term()
 
-  @type table_info :: %{columns: list(column())}
-
   @doc """
   Accesses tabular data as a sequence of rows.
 
@@ -89,7 +87,7 @@ defmodule Table do
       %{columns: [:id, :name]}
 
   """
-  @spec to_rows_with_info(Reader.t(), keyword()) :: {Enumerable.t(), table_info()}
+  @spec to_rows_with_info(Reader.t(), keyword()) :: {Enumerable.t(), Table.Reader.metadata()}
   def to_rows_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 
@@ -158,7 +156,7 @@ defmodule Table do
 
   """
   @spec to_columns_with_info(Reader.t(), keyword()) ::
-          {%{column() => Enumerable.t()}, table_info()}
+          {%{column() => Enumerable.t()}, Table.Reader.metadata()}
   def to_columns_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 
@@ -204,7 +202,7 @@ defmodule Table do
   defp include_column?(nil, _column), do: true
   defp include_column?(only, column), do: MapSet.member?(only, column)
 
-  defp get_info({_, %{columns: columns}, _}), do: %{columns: columns}
+  defp get_info({_, metadata, _}), do: metadata
 
   # --- Backports ---
 
