@@ -68,6 +68,7 @@ defmodule Table.Zipper do
         end
       end)
       |> case do
+        # TODO: rely only on 3-arity functions on Elixir v1.18
         {sizes, fun2s, nil} ->
           fun = fn start, length ->
             fun2s
