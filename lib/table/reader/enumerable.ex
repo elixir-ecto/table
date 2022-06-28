@@ -37,7 +37,7 @@ defmodule Table.Reader.Enumerable do
         case columns_for(head) do
           {:ok, columns} ->
             meta = %{columns: columns}
-            enum = Stream.map(enum, &record_values(&1, columns))
+            enum = Table.Mapper.map(enum, &record_values(&1, columns))
             {:rows, meta, enum}
 
           :error ->

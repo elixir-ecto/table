@@ -21,4 +21,15 @@ defmodule Table.MapperTest do
     assert Enum.member?(enumerable, 36) == true
     assert Enum.member?(enumerable, 37) == false
   end
+
+  test "mapping multiple times retains a flat mapper" do
+    enumerable =
+      1..3
+      |> Mapper.map(fn x -> x * x end)
+      |> Mapper.map(fn x -> x + 1 end)
+
+    assert %Mapper{enumerable: 1..3} = enumerable
+
+    assert Enum.to_list(enumerable) == [2, 5, 10]
+  end
 end
