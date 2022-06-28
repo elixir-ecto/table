@@ -47,6 +47,13 @@ defmodule TableTest do
                %{"name" => "John"}
              ]
     end
+
+    test "accepts initialized reader" do
+      assert @row_data |> Table.Reader.init() |> Table.to_rows() |> Enum.to_list() == [
+               %{"id" => 1, "name" => "Sherlock"},
+               %{"id" => 2, "name" => "John"}
+             ]
+    end
   end
 
   describe "to_columns/1" do
@@ -78,6 +85,13 @@ defmodule TableTest do
 
     test "column data with :only" do
       assert @column_data |> Table.to_columns(only: ["name"]) |> enumerate_columns() == %{
+               "name" => ["Sherlock", "John"]
+             }
+    end
+
+    test "accepts initialized reader" do
+      assert @row_data |> Table.Reader.init() |> Table.to_columns() |> enumerate_columns() == %{
+               "id" => [1, 2],
                "name" => ["Sherlock", "John"]
              }
     end
