@@ -51,7 +51,7 @@ defmodule Table do
 
   @type column :: term()
 
-  @type table_info :: %{columns: list(column())}
+  @type tabular :: Reader.t() | Reader.row_reader() | Reader.column_reader()
 
   @doc """
   Accesses tabular data as a sequence of rows.
@@ -73,29 +73,24 @@ defmodule Table do
       [%{id: 1, name: "Sherlock"}, %{id: 2, name: "John"}, %{id: 3, name: "Mycroft"}]
 
   """
-  @spec to_rows(Reader.t(), keyword()) :: Enumerable.t()
+  @spec to_rows(tabular(), keyword()) :: Enumerable.t()
   def to_rows(tabular, opts \\ []) do
-    tabular |> to_rows_with_info(opts) |> elem(0)
-  end
-
-  @doc """
-  Same as `to_rows/2`, extended with information about the table.
-
-  ## Examples
-
-      iex> data = %{id: [1, 2, 3], name: ["Sherlock", "John", "Mycroft"]}
-      iex> {_rows, info} = Table.to_rows_with_info(data)
-      iex> info
-      %{columns: [:id, :name]}
-
-  """
-  @spec to_rows_with_info(Reader.t(), keyword()) :: {Enumerable.t(), table_info()}
-  def to_rows_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 
-    reader = init_reader!(tabular)
-    {read_rows(reader, only), get_info(reader)}
+    tabular
+    |> init_reader!()
+    |> read_rows(only)
   end
+
+  # TODO: remove in v0.2
+  @deprecated "Use Table.Reader.init/1 to get reader with metadata, then pass the reader to Table.to_rows/2"
+  def to_rows_with_info(tabular, opts \\ []) do
+    reader = {_, meta, _} = Table.Reader.init(tabular)
+    {to_rows(reader, opts), meta}
+  end
+
+  defp init_reader!({:rows, %{}, _} = reader), do: reader
+  defp init_reader!({:columns, %{}, _} = reader), do: reader
 
   defp init_reader!(tabular) do
     with :none <- Reader.init(tabular) do
@@ -141,29 +136,20 @@ defmodule Table do
       ["Sherlock", "John", "Mycroft"]
 
   """
-  @spec to_columns(Reader.t(), keyword()) :: %{column() => Enumerable.t()}
+  @spec to_columns(tabular(), keyword()) :: %{column() => Enumerable.t()}
   def to_columns(tabular, opts \\ []) do
-    tabular |> to_columns_with_info(opts) |> elem(0)
-  end
-
-  @doc """
-  Same as `to_columns/2`, extended with information about the table.
-
-  ## Examples
-
-      iex> data = [%{id: 1, name: "Sherlock"}, %{id: 2, name: "John"}, %{id: 3, name: "Mycroft"}]
-      iex> {_columns, info} = Table.to_columns_with_info(data)
-      iex> info
-      %{columns: [:id, :name]}
-
-  """
-  @spec to_columns_with_info(Reader.t(), keyword()) ::
-          {%{column() => Enumerable.t()}, table_info()}
-  def to_columns_with_info(tabular, opts \\ []) do
     only = opts[:only] && MapSet.new(opts[:only])
 
-    reader = init_reader!(tabular)
-    {read_columns(reader, only), get_info(reader)}
+    tabular
+    |> init_reader!()
+    |> read_columns(only)
+  end
+
+  # TODO: remove in v0.2
+  @deprecated "Use Table.Reader.init/1 to get reader with metadata, then pass the reader to Table.to_columns/2"
+  def to_columns_with_info(tabular, opts \\ []) do
+    reader = {_, meta, _} = Table.Reader.init(tabular)
+    {to_columns(reader, opts), meta}
   end
 
   defp read_columns({:columns, meta, enum}, only) do
@@ -203,8 +189,6 @@ defmodule Table do
 
   defp include_column?(nil, _column), do: true
   defp include_column?(only, column), do: MapSet.member?(only, column)
-
-  defp get_info({_, %{columns: columns}, _}), do: %{columns: columns}
 
   # --- Backports ---
 
