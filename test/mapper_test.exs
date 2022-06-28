@@ -3,6 +3,11 @@ defmodule Table.MapperTest do
 
   alias Table.Mapper
 
+  test "count" do
+    enumerable = 1..3 |> Mapper.map(fn x -> x * x end)
+    assert Enum.count(enumerable) == 3
+  end
+
   test "reduce" do
     enumerable = 1..3 |> Mapper.map(fn x -> x * x end)
     assert Enum.reduce(enumerable, &(&1 + &2)) == 14
