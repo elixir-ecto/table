@@ -6,6 +6,9 @@ defmodule Table.ZipperTest do
   test "count" do
     enumerable = Zipper.zip([1..4, 1..3, 1..5])
     assert Enum.count(enumerable) == 3
+
+    enumerable = Zipper.zip([1..4, [1, 2, 3], 1..5])
+    assert Enum.count(enumerable) == 3
   end
 
   test "reduce" do
