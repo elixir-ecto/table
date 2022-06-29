@@ -25,7 +25,9 @@ defmodule Table.Mapper do
 
   defimpl Enumerable do
     def count(mapper) do
-      Enumerable.count(mapper.enumerable)
+      with {:error, _} <- Enumerable.count(mapper.enumerable) do
+        {:error, __MODULE__}
+      end
     end
 
     # The mapping is not necessarily reversible, so we fall
