@@ -51,7 +51,7 @@ defprotocol Table.Reader do
 
   The `init/1` function should not initiate any form of traversal
   or open existing resources. If any setup is necessary, it should
-  be peformed when the underlying row or column enumerables are
+  be performed when the underlying row or column enumerables are
   traversed.
   """
   @spec init(t()) :: row_reader() | column_reader() | :none
