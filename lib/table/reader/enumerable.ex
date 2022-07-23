@@ -75,18 +75,20 @@ defmodule Table.Reader.Enumerable do
   end
 
   defp record_values(record, columns, head_record) when is_map(record) do
-    {values, remaining_record} =
-      Enum.map_reduce(columns, record, fn column, remaining_record ->
-        Map.pop_lazy(remaining_record, column, fn ->
-          raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
-        end)
-      end)
-
-    if remaining_record != %{} do
-      raise "map records must have the same columns, missing column(s) #{inspect(Map.keys(remaining_record))} in #{inspect(head_record)}"
-    else
-      values
+    if map_size(record) > map_size(head_record) do
+      missing_columns = Map.keys(record) -- columns
+      raise "map records must have the same columns, missing column(s) #{inspect(missing_columns)} in #{inspect(head_record)}"
     end
+
+    Enum.map(columns, fn column ->
+      case record do
+        %{^column => value} ->
+          value
+
+        _ ->
+          raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
+      end
+    end)
   end
 
   defp record_values(record, _columns, _head_record) do
