@@ -92,7 +92,7 @@ defmodule Table.Reader.Enumerable do
     end
   end
 
-  defp record_values(record, _head_record, _columns) do
+  defp record_values(record, _columns, _head_record) do
     raise "invalid table record: #{inspect(record)}"
   end
 
