@@ -77,12 +77,9 @@ defmodule Table.Reader.Enumerable do
   defp record_values(record, columns, head_record) when is_map(record) do
     {values, remaining_record} =
       Enum.map_reduce(columns, record, fn column, remaining_record ->
-        try do
-          Map.pop!(remaining_record, column)
-        rescue
-          KeyError ->
-            raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
-        end
+        Map.pop_lazy(remaining_record, column, fn ->
+          raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
+        end)
       end)
 
     if remaining_record != %{} do
