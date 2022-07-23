@@ -77,6 +77,7 @@ defmodule Table.Reader.Enumerable do
   defp record_values(record, columns, head_record) when is_map(record) do
     if map_size(record) > map_size(head_record) do
       missing_columns = Map.keys(record) -- columns
+
       raise "map records must have the same columns, missing column(s) #{inspect(missing_columns)} in #{inspect(head_record)}"
     end
 
