@@ -94,7 +94,6 @@ defmodule Table.ReaderTest do
                  %{"x" => 1, "y" => 1}
                ])
 
-
       assert_raise RuntimeError,
                    ~s/map records must have the same columns, missing column(s) ["y"] in %{"x" => 2}/,
                    fn ->
@@ -148,7 +147,6 @@ defmodule Table.ReaderTest do
                  [{"x", 2}],
                  [{"x", 1}, {"y", 1}]
                ])
-
 
       assert_raise RuntimeError,
                    ~s/key-value records must have the same columns, missing "y"/,
