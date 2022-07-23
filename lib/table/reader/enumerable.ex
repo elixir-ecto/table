@@ -37,7 +37,7 @@ defmodule Table.Reader.Enumerable do
         case columns_for(head) do
           {:ok, columns} ->
             meta = %{columns: columns}
-            enum = Table.Mapper.map(enum, &record_values(&1, columns))
+            enum = Table.Mapper.map(enum, &record_values(&1, columns, head))
             {:rows, meta, enum}
 
           :error ->
@@ -70,11 +70,17 @@ defmodule Table.Reader.Enumerable do
   defp keyval_columns([{key, _} | rest], columns), do: keyval_columns(rest, [key | columns])
   defp keyval_columns(_list, _columns), do: :error
 
-  defp record_values(record, columns) when is_list(record) do
+  defp record_values(record, columns, _head_record) when is_list(record) do
     keyval_values(record, columns)
   end
 
-  defp record_values(record, columns) when is_map(record) do
+  defp record_values(record, columns, head_record) when is_map(record) do
+    if map_size(record) > map_size(head_record) do
+      missing_columns = Map.keys(record) -- columns
+
+      raise "map records must have the same columns, missing column(s) #{inspect(missing_columns)} in #{inspect(head_record)}"
+    end
+
     Enum.map(columns, fn column ->
       case record do
         %{^column => value} ->
@@ -86,7 +92,7 @@ defmodule Table.Reader.Enumerable do
     end)
   end
 
-  defp record_values(record, _columns) do
+  defp record_values(record, _columns, _head_record) do
     raise "invalid table record: #{inspect(record)}"
   end
 
@@ -94,6 +100,14 @@ defmodule Table.Reader.Enumerable do
 
   defp keyval_values([{column, value} | rest], [column | columns]) do
     [value | keyval_values(rest, columns)]
+  end
+
+  defp keyval_values([], [column | _columns]) do
+    raise "key-value records must have the same columns, missing #{inspect(column)}"
+  end
+
+  defp keyval_values([{column, _value}], []) do
+    raise "key-value records must have the same columns, missing #{inspect(column)}"
   end
 
   defp keyval_values([{actual, _value} | _rest], [column | _columns]) do

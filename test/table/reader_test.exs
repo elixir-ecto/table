@@ -74,6 +74,7 @@ defmodule Table.ReaderTest do
     end
 
     test "enumerating rows raises on missing map element" do
+      # First row has more columns than later rows
       assert {:rows, %{}, enum} =
                Table.Reader.init([
                  %{"x" => 1, "y" => 1},
@@ -82,6 +83,19 @@ defmodule Table.ReaderTest do
 
       assert_raise RuntimeError,
                    ~s/map records must have the same columns, missing column "y" in %{"x" => 2}/,
+                   fn ->
+                     Enum.to_list(enum)
+                   end
+
+      # Later row has more columns than first row
+      assert {:rows, %{}, enum} =
+               Table.Reader.init([
+                 %{"x" => 2},
+                 %{"x" => 1, "y" => 1}
+               ])
+
+      assert_raise RuntimeError,
+                   ~s/map records must have the same columns, missing column(s) ["y"] in %{"x" => 2}/,
                    fn ->
                      Enum.to_list(enum)
                    end
@@ -111,6 +125,34 @@ defmodule Table.ReaderTest do
       assert_raise RuntimeError, ~s/expected a key-value pair, but got: 2/, fn ->
         Enum.to_list(enum)
       end
+    end
+
+    test "enumerating rows raises on missing keyval element" do
+      # First row has more columns than later rows
+      assert {:rows, %{}, enum} =
+               Table.Reader.init([
+                 [{"x", 1}, {"y", 1}],
+                 [{"x", 2}]
+               ])
+
+      assert_raise RuntimeError,
+                   ~s/key-value records must have the same columns, missing "y"/,
+                   fn ->
+                     Enum.to_list(enum)
+                   end
+
+      # Later row has more columns than first row
+      assert {:rows, %{}, enum} =
+               Table.Reader.init([
+                 [{"x", 2}],
+                 [{"x", 1}, {"y", 1}]
+               ])
+
+      assert_raise RuntimeError,
+                   ~s/key-value records must have the same columns, missing "y"/,
+                   fn ->
+                     Enum.to_list(enum)
+                   end
     end
   end
 
