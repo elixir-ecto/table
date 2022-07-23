@@ -37,7 +37,7 @@ defmodule Table.Reader.Enumerable do
         case columns_for(head) do
           {:ok, columns} ->
             meta = %{columns: columns}
-            enum = Table.Mapper.map(enum, &record_values(&1, columns))
+            enum = Table.Mapper.map(enum, &record_values(&1, columns, head))
             {:rows, meta, enum}
 
           :error ->
@@ -70,23 +70,29 @@ defmodule Table.Reader.Enumerable do
   defp keyval_columns([{key, _} | rest], columns), do: keyval_columns(rest, [key | columns])
   defp keyval_columns(_list, _columns), do: :error
 
-  defp record_values(record, columns) when is_list(record) do
+  defp record_values(record, columns, _head_record) when is_list(record) do
     keyval_values(record, columns)
   end
 
-  defp record_values(record, columns) when is_map(record) do
-    Enum.map(columns, fn column ->
-      case record do
-        %{^column => value} ->
-          value
+  defp record_values(record, columns, head_record) when is_map(record) do
+    {values, remaining_record} =
+      Enum.map_reduce(columns, record, fn column, remaining_record ->
+        try do
+          Map.pop!(remaining_record, column)
+        rescue
+          KeyError ->
+            raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
+        end
+      end)
 
-        _ ->
-          raise "map records must have the same columns, missing column #{inspect(column)} in #{inspect(record)}"
-      end
-    end)
+    if remaining_record != %{} do
+      raise "map records must have the same columns, missing column(s) #{inspect(Map.keys(remaining_record))} in #{inspect(head_record)}"
+    else
+      values
+    end
   end
 
-  defp record_values(record, _columns) do
+  defp record_values(record, _head_record, _columns) do
     raise "invalid table record: #{inspect(record)}"
   end
 
@@ -94,6 +100,14 @@ defmodule Table.Reader.Enumerable do
 
   defp keyval_values([{column, value} | rest], [column | columns]) do
     [value | keyval_values(rest, columns)]
+  end
+
+  defp keyval_values([], [column | _columns]) do
+    raise "key-value records must have the same columns, missing #{inspect(column)}"
+  end
+
+  defp keyval_values([{column, _value}], []) do
+    raise "key-value records must have the same columns, missing #{inspect(column)}"
   end
 
   defp keyval_values([{actual, _value} | _rest], [column | _columns]) do
